@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Details - PixelShare</title>
+    <style>
+        /* CSS VARIABLES & DARK MODE */
+        :root {
+            --primary: #6366f1; --primary-hover: #4f46e5;
+            --bg: #0f172a; --surface: #1e293b; 
+            --text-main: #f8fafc; --text-muted: #94a3b8; 
+        }
+        
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--text-main); overflow: hidden; }
+        a { text-decoration: none; color: inherit; }
+
+        /* NAVBAR */
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
+        }
+        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
+        .logo span { color: var(--primary); } 
+        
+        .nav-btn {
+            display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5); }
+        .profile-img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s ease; }
+
+        /* SPLIT SCREEN LAYOUT */
+        .content-area { display: flex; flex: 1; overflow: hidden; }
+        
+        .image-viewer {
+            flex: 2; background-color: #000; display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        .image-viewer img { max-width: 95%; max-height: 95%; box-shadow: 0 10px 40px rgba(0,0,0,0.8); border-radius: 8px; object-fit: contain; }
+
+        .sidebar {
+            flex: 1; padding: 3rem; background: var(--surface); border-left: 1px solid rgba(255,255,255,0.05); overflow-y: auto; max-width: 450px;
+        }
+        
+        .user-profile { display: flex; align-items: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .avatar { width: 55px; height: 55px; background: var(--bg); border-radius: 50%; margin-right: 1.2rem; background-position: center; background-size: cover; border: 2px solid var(--primary); }
+        
+        h3 { color: var(--text-main); font-size: 1.1rem; margin-top: 2rem; margin-bottom: 1rem; }
+        
+        .stats-grid { display: flex; gap: 2rem; margin-bottom: 2rem; color: var(--text-muted); }
+        .stats-grid strong { color: var(--text-main); font-size: 1.2rem; display: block; margin-bottom: 4px; }
+        
+        .tag { display: inline-block; background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; margin-right: 8px; margin-bottom: 8px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.3); }
+        
+        .action-btn {
+            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 14px; text-align: center; background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none; text-decoration: none; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; box-sizing: border-box; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; font-size: 1rem;
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
+        
+        .btn-back { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); box-shadow: none; }
+        .btn-back:hover { background: rgba(255,255,255,0.05); box-shadow: none; border-color: rgba(255,255,255,0.4); }
+
+        @media (max-width: 900px) {
+            .content-area { flex-direction: column; overflow-y: auto; }
+            .image-viewer { flex: none; height: 50vh; padding: 1rem; }
+            .sidebar { flex: none; max-width: 100%; border-left: none; padding: 2rem; }
+            body { overflow: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Pixel<span>Share</span></div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="upload.html">
+                <button class="nav-btn">Upload</button>
+            </a>
+            <a href="login.html" title="My Profile">
+                <img src="https://ui-avatars.com/api/?name=Alex+Doe&background=1e293b&color=f8fafc&rounded=true&bold=true" alt="Profile" class="profile-img">
+            </a>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="image-viewer">
+            <img id="mainImage" src="" alt="Detail View">
+        </div>
+
+        <div class="sidebar">
+            <div class="user-profile">
+                <div id="avatar" class="avatar"></div>
+                <div>
+                    <div id="username" style="font-weight: bold; font-size: 1.2rem;">@loading...</div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Published just now</div>
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="downloadImage()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download Original
+            </button>
+            
+            <a href="index.html" class="action-btn btn-back">Return to Gallery</a>
+            
+            <div class="stats-grid">
+                <div><strong>1,240</strong> Views</div>
+                <div id="likes"><strong>0</strong> Likes</div>
+            </div>
+
+            <h3>Tags</h3>
+            <div id="tags"></div>
+
+            <h3>Description</h3>
+            <p id="description" style="color: var(--text-muted); line-height: 1.6;">A beautiful moment captured and shared on PixelShare.</p>
+        </div>
+    </div>
+
+    <script>
+    // Load the SQL row data from memory
+    const photoData = JSON.parse(localStorage.getItem('pixelShareCurrentView'));
+    
+    let globalImgUrl = "";
+    let globalUser = "";
+
+    if (photoData) {
+        // Reconstruct the image path pointing to your local Node.js 'uploads' folder
+        globalImgUrl = `/uploads/${photoData.MediaID}${photoData.FileExtension}`;
+        globalUser = photoData.UserID;
+
+        // Populate the UI using your exact SQL column names!
+        document.getElementById('mainImage').src = globalImgUrl;
+        document.getElementById('avatar').style.backgroundImage = `url('${globalImgUrl}')`;
+        document.getElementById('username').innerText = "@" + photoData.UserID;
+        document.getElementById('likes').innerHTML = `<strong>0</strong> Likes`; // Hardcoded to 0 for now
+        
+        if (photoData.Description) {
+            document.getElementById('description').innerText = photoData.Description;
+        } else {
+            document.getElementById('description').innerText = "No description provided.";
+        }
+
+        // Populate Tags (Using the SQL 'Tags' column)
+        if (photoData.Tags) {
+            const tagsArray = photoData.Tags.split(',');
+            const tagsContainer = document.getElementById('tags');
+            tagsContainer.innerHTML = ''; 
+            tagsArray.forEach(tag => {
+                if(tag.trim() === '') return;
+                const span = document.createElement('span');
+                span.className = 'tag';
+                span.innerText = '#' + tag.trim();
+                tagsContainer.appendChild(span);
+            });
+        }
+    } else {
+        document.getElementById('description').innerText = "Error loading image. Please return to the gallery.";
+    }
+
+    // --- DOWNLOAD FUNCTION ---
+    function downloadImage() {
+        if (!globalImgUrl) return;
+        
+        // Triggers the browser to download the file from your local server
+        const a = document.createElement('a');
+        a.href = globalImgUrl;
+        a.download = `PixelShare_${globalUser}_export${photoData.FileExtension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
+
+</body>
+</html>

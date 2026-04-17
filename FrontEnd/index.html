@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelShare - Home</title>
+    <style>
+        :root {
+            --primary: #6366f1; --bg: #0f172a; --surface: #1e293b; 
+            --text-main: #f8fafc; --text-muted: #94a3b8; 
+        }
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text-main); }
+        a { text-decoration: none; color: inherit; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); position: sticky; top: 0; 
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 1000; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
+        .logo span { color: var(--primary); } 
+        
+        .nav-btn {
+            display: flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none; padding: 0.7rem 1.4rem;
+            border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5); }
+        
+        .profile-img {
+            width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--surface); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s ease;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600') no-repeat center center/cover;
+            height: 340px; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            color: white; text-align: center; padding: 0 20px;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 700; }
+        
+        .search-box { 
+            padding: 1.2rem 2rem; width: 500px; max-width: 100%; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); 
+            background: var(--surface); color: var(--text-main); font-size: 1rem; outline: none; 
+        }
+
+        .category-tabs {
+            display: flex; justify-content: center; gap: 15px; padding: 2rem;
+            background: var(--bg); position: sticky; top: 73px; z-index: 900;
+            border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: var(--surface); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05);
+            padding: 0.6rem 1.5rem; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; font-weight: 600;
+        }
+        .tab-btn:hover { background: rgba(99, 102, 241, 0.1); color: white; border-color: rgba(99, 102, 241, 0.5); }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .gallery-container { padding: 3rem; max-width: 1600px; margin: 0 auto; min-height: 500px; }
+        .masonry-grid { column-count: 4; column-gap: 2rem; }
+        
+        .photo-card {
+            background: var(--surface); margin-bottom: 2rem; break-inside: avoid; border-radius: 16px;
+            overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .photo-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.1); }
+        .photo-card img { width: 100%; display: block; opacity: 0.95; transition: opacity 0.3s ease; }
+        .photo-card:hover img { opacity: 1; }
+        
+        .photo-info { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .user-handle { font-size: 0.95rem; font-weight: 600; }
+        .likes { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+
+        @media (max-width: 1200px) { .masonry-grid { column-count: 3; } }
+        @media (max-width: 900px) { .masonry-grid { column-count: 2; } }
+        @media (max-width: 600px) { .masonry-grid { column-count: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Pixel<span>Share</span></div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="upload.html">
+                <button class="nav-btn">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Upload
+                </button>
+            </a>
+            <a href="login.html" title="My Profile">
+                <img src="https://ui-avatars.com/api/?name=Alex+Doe&background=1e293b&color=f8fafc&rounded=true&bold=true" alt="Profile" class="profile-img">
+            </a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Discover and share the world's best photos</h1>
+        <p>A creative community powered by cloud technology.</p>
+        <input type="text" class="search-box" placeholder="Search high-resolution images...">
+    </section>
+
+    <div class="category-tabs">
+        <button class="tab-btn active" onclick="filterGallery('All', this)">All</button>
+        <button class="tab-btn" onclick="filterGallery('Nature', this)">🌿 Nature</button>
+        <button class="tab-btn" onclick="filterGallery('Style', this)">✨ Style</button>
+        <button class="tab-btn" onclick="filterGallery('Urban', this)">🏙️ Urban</button>
+        <button class="tab-btn" onclick="filterGallery('Other', this)">📁 Other</button>
+    </div>
+
+    <section class="gallery-container">
+        <div class="masonry-grid" id="photo-grid"></div>
+    </section>
+
+  <script>
+    let currentDatabase = [];
+
+    // Save selected photo to local storage just for viewing on detail.html
+    function openDetailView(photoId) {
+        const selectedPhoto = currentDatabase.find(p => p.MediaID === photoId);
+        if (selectedPhoto) {
+            localStorage.setItem('pixelShareCurrentView', JSON.stringify(selectedPhoto));
+            window.location.href = "detail.html";
+        }
+    }
+
+    function renderPhotos(photosToRender) {
+        const grid = document.getElementById('photo-grid');
+        grid.innerHTML = ''; 
+        
+        if (photosToRender.length === 0) {
+            grid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">No photos found.</p>';
+            return;
+        }
+
+        photosToRender.forEach(photo => {
+            // Point the image source to your server's uploads folder
+            const imageUrl = `/uploads/${photo.MediaID}${photo.FileExtension}`;
+            
+            const cardHtml = `
+                <div class="photo-card">
+                    <a href="#" onclick="openDetailView('${photo.MediaID}'); return false;">
+                        <img src="${imageUrl}" alt="${photo.Category}">
+                    </a>
+                    <div class="photo-info">
+                        <span class="user-handle">@${photo.UserID}</span>
+                        <span class="likes">❤️ 0</span>
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += cardHtml;
+        });
+    }
+
+    function filterGallery(category, buttonElement) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        buttonElement.classList.add('active');
+
+        let filteredPhotos = category === 'All' 
+            ? currentDatabase 
+            : currentDatabase.filter(photo => photo.Category === category);
+        
+        renderPhotos(filteredPhotos);
+    }
+
+    // FETCH PHOTOS FROM YOUR SQL DATABASE WHEN PAGE LOADS
+    window.onload = async () => {
+        try {
+            const response = await fetch('/api/photos');
+            currentDatabase = await response.json();
+            renderPhotos(currentDatabase);
+        } catch (error) {
+            console.error("Error fetching from database:", error);
+            document.getElementById('photo-grid').innerHTML = "<p>Please start your Node.js server.</p>";
+        }
+    };
+</script>
+</body>
+</html>
