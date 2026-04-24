@@ -2,9 +2,28 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
+const { CosmosClient } = require("@azure/cosmos");
 
 const app = express();
 const port = 3000;
+
+const endpoint = process.env.COSMOS_DB_ENDPOINT;
+const key = process.env.COSMOS_DB_KEY;
+const databaseId = process.env.COSMOS_DB_DATABASE;
+const containerId = process.env.COSMOS_DB_CONTAINER;
+
+const client = new CosmosClient({ endpoint, key });
+
+async function setupDatabase() {
+    const { database } = await client.databases.createIfNotExists({ id: databaseId });
+    const { container } = await database.containers.createIfNotExists({ id: containerId });
+    console.log("Connected to Cosmos DB successfully!");
+    return container;
+}
+
+module.exports = { setupDatabase };
+
+
 
 // Handle large image data (up to 50MB)
 app.use(express.json({ limit: '50mb' }));
@@ -78,5 +97,5 @@ app.get('/api/photos', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`🚀 Server active: http://localhost:3000`);
+    console.log(` Server active: http://localhost:3000`);
 });
