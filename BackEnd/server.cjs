@@ -7,6 +7,11 @@ const { CosmosClient } = require("@azure/cosmos");
 const app = express();
 const port = process.env.PORT || 8080;
 
+app.listen(port, () => {
+    console.log(`Server active on port ${port}`);
+    setupDatabase().catch(err => console.error("Database initialization failed:", err));
+});
+
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const databaseId = process.env.COSMOS_DB_DATABASE;
