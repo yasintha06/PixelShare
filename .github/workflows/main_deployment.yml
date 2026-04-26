@@ -22,7 +22,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-        working-directory: ./BackEnd
+cd BackEnd
+        
 
       - name: npm install, build, and test
         run: |
