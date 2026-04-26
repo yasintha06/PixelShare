@@ -1,10 +1,12 @@
 {
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "commonjs",
   "dependencies": {
     "@azure/cosmos": "^4.9.3",
     "@azure/storage-blob": "^12.31.0",
-    "type": "commonjs",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "sqlite3": "^6.0.1"
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
   }
 }
