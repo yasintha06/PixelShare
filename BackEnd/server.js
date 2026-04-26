@@ -5,7 +5,7 @@ const path = require('path');
 const { CosmosClient } = require("@azure/cosmos");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
