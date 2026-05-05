@@ -138,16 +138,16 @@
         }
 
         photosToRender.forEach(photo => {
-            // Point the image source to your server's uploads folder
-            const imageUrl = `/uploads/${photo.MediaID}${photo.FileExtension}`;
+            // Prefer the Cloud URL, fallback to local path
+            const imageUrl = photo.ImageUrl || `/uploads/${photo.MediaID}${photo.FileExtension}`;
             
             const cardHtml = `
                 <div class="photo-card">
                     <a href="#" onclick="openDetailView('${photo.MediaID}'); return false;">
-                        <img src="${imageUrl}" alt="${photo.Category}">
+                        <img src="${imageUrl}" alt="${photo.Category || 'Photo'}">
                     </a>
                     <div class="photo-info">
-                        <span class="user-handle">@${photo.UserID}</span>
+                        <span class="user-handle">@${photo.Photographer || 'anonymous'}</span>
                         <span class="likes">❤️ 0</span>
                     </div>
                 </div>

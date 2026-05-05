@@ -123,14 +123,14 @@
     let globalUser = "";
 
     if (photoData) {
-        // Reconstruct the image path pointing to your local Node.js 'uploads' folder
-        globalImgUrl = `/uploads/${photoData.MediaID}${photoData.FileExtension}`;
-        globalUser = photoData.UserID;
+        // Prefer the Cloud URL, fallback to local path
+        globalImgUrl = photoData.ImageUrl || `/uploads/${photoData.MediaID}${photoData.FileExtension}`;
+        globalUser = photoData.Photographer || 'anonymous';
 
-        // Populate the UI using your exact SQL column names!
+        // Populate the UI
         document.getElementById('mainImage').src = globalImgUrl;
         document.getElementById('avatar').style.backgroundImage = `url('${globalImgUrl}')`;
-        document.getElementById('username').innerText = "@" + photoData.UserID;
+        document.getElementById('username').innerText = "@" + globalUser;
         document.getElementById('likes').innerHTML = `<strong>0</strong> Likes`; // Hardcoded to 0 for now
         
         if (photoData.Description) {
