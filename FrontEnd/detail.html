@@ -3,172 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Details - PixelShare</title>
+    <title>PixelShare | Detail View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS VARIABLES & DARK MODE */
         :root {
-            --primary: #6366f1; --primary-hover: #4f46e5;
-            --bg: #0f172a; --surface: #1e293b; 
-            --text-main: #f8fafc; --text-muted: #94a3b8; 
+            --primary: #6366f1;
+            --bg: #030712;
+            --surface: rgba(30, 41, 59, 0.4);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
         }
-        
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--text-main); overflow: hidden; }
-        a { text-decoration: none; color: inherit; }
 
-        /* NAVBAR */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
         header {
-            display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4); background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
+            padding: 1rem 5%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
-        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
-        .logo span { color: var(--primary); } 
-        
-        .nav-btn {
-            display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;
-        }
-        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5); }
-        .profile-img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s ease; }
+        .logo { font-size: 1.6rem; font-weight: 800; text-decoration: none; color: white; }
+        .logo span { color: var(--primary); }
+        .nav-btn { background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
 
-        /* SPLIT SCREEN LAYOUT */
-        .content-area { display: flex; flex: 1; overflow: hidden; }
-        
-        .image-viewer {
-            flex: 2; background-color: #000; display: flex; justify-content: center; align-items: center; position: relative;
-        }
-        .image-viewer img { max-width: 95%; max-height: 95%; box-shadow: 0 10px 40px rgba(0,0,0,0.8); border-radius: 8px; object-fit: contain; }
+        .main-content { display: flex; flex: 1; overflow: hidden; }
 
-        .sidebar {
-            flex: 1; padding: 3rem; background: var(--surface); border-left: 1px solid rgba(255,255,255,0.05); overflow-y: auto; max-width: 450px;
-        }
-        
-        .user-profile { display: flex; align-items: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .avatar { width: 55px; height: 55px; background: var(--bg); border-radius: 50%; margin-right: 1.2rem; background-position: center; background-size: cover; border: 2px solid var(--primary); }
-        
-        h3 { color: var(--text-main); font-size: 1.1rem; margin-top: 2rem; margin-bottom: 1rem; }
-        
-        .stats-grid { display: flex; gap: 2rem; margin-bottom: 2rem; color: var(--text-muted); }
-        .stats-grid strong { color: var(--text-main); font-size: 1.2rem; display: block; margin-bottom: 4px; }
-        
-        .tag { display: inline-block; background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; margin-right: 8px; margin-bottom: 8px; font-weight: 600; border: 1px solid rgba(99, 102, 241, 0.3); }
-        
-        .action-btn {
-            display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; padding: 14px; text-align: center; background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none; text-decoration: none; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; box-sizing: border-box; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; font-size: 1rem;
-        }
-        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
-        
-        .btn-back { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-main); box-shadow: none; }
-        .btn-back:hover { background: rgba(255,255,255,0.05); box-shadow: none; border-color: rgba(255,255,255,0.4); }
+        .viewer { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; position: relative; padding: 40px; }
+        .viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
 
-        @media (max-width: 900px) {
-            .content-area { flex-direction: column; overflow-y: auto; }
-            .image-viewer { flex: none; height: 50vh; padding: 1rem; }
-            .sidebar { flex: none; max-width: 100%; border-left: none; padding: 2rem; }
+        .sidebar { width: 400px; background: var(--surface); backdrop-filter: blur(20px); border-left: 1px solid var(--border); padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
+
+        .info-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+        .info-header p { color: var(--text-muted); font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .meta-item label { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
+        .meta-item span { font-weight: 600; font-size: 0.95rem; }
+
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(99, 102, 241, 0.2); }
+
+        .action-group { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
+        .btn-action { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; }
+        .btn-download { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2); }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4); }
+        .btn-back { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); text-decoration: none; }
+        .btn-back:hover { background: rgba(255,255,255,0.1); }
+
+        @media (max-width: 1000px) {
+            .main-content { flex-direction: column; overflow-y: auto; }
+            .viewer { height: 60vh; flex: none; }
+            .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); flex: none; }
             body { overflow: auto; }
         }
     </style>
 </head>
 <body>
-
     <header>
-        <div class="logo">Pixel<span>Share</span></div>
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="upload.html">
-                <button class="nav-btn">Upload</button>
-            </a>
-            <a href="login.html" title="My Profile">
-                <img src="https://ui-avatars.com/api/?name=Alex+Doe&background=1e293b&color=f8fafc&rounded=true&bold=true" alt="Profile" class="profile-img">
-            </a>
-        </div>
+        <a href="index.html" class="logo">Pixel<span>Share</span></a>
+        <a href="index.html" class="nav-btn">Back to Gallery</a>
     </header>
 
-    <div class="content-area">
-        <div class="image-viewer">
-            <img id="mainImage" src="" alt="Detail View">
+    <div class="main-content">
+        <div class="viewer">
+            <img id="mainImage" src="" alt="Masterpiece">
         </div>
 
-        <div class="sidebar">
-            <div class="user-profile">
-                <div id="avatar" class="avatar"></div>
-                <div>
-                    <div id="username" style="font-weight: bold; font-size: 1.2rem;">@loading...</div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Published just now</div>
-                </div>
+        <aside class="sidebar">
+            <div class="info-header">
+                <h2 id="title">Image Title</h2>
+                <p>📍 <span id="location">Location</span></p>
             </div>
 
-            <button class="action-btn" onclick="downloadImage()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download Original
-            </button>
-            
-            <a href="index.html" class="action-btn btn-back">Return to Gallery</a>
-            
-            <div class="stats-grid">
-                <div><strong>1,240</strong> Views</div>
-                <div id="likes"><strong>0</strong> Likes</div>
+            <div class="meta-grid">
+                <div class="meta-item"><label>Photographer</label><span id="photographer">@username</span></div>
+                <div class="meta-item"><label>Extension</label><span id="extension">JPG</span></div>
+                <div class="meta-item"><label>Resolution</label><span id="resolution">0x0</span></div>
+                <div class="meta-item"><label>Size</label><span id="size">0MB</span></div>
             </div>
 
-            <h3>Tags</h3>
-            <div id="tags"></div>
+            <div class="description-box">
+                <label style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px;">Description</label>
+                <p id="description" style="color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;">No description provided.</p>
+            </div>
 
-            <h3>Description</h3>
-            <p id="description" style="color: var(--text-muted); line-height: 1.6;">A beautiful moment captured and shared on PixelShare.</p>
-        </div>
+            <div class="tags-section">
+                <label style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 12px;">Tags</label>
+                <div id="tags" class="tags-container"></div>
+            </div>
+
+            <div class="action-group">
+                <button class="btn-action btn-download" onclick="downloadImage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download Original
+                </button>
+                <a href="index.html" class="btn-action btn-back">Return to Gallery</a>
+            </div>
+        </aside>
     </div>
 
     <script>
-    // Load the SQL row data from memory
-    const photoData = JSON.parse(localStorage.getItem('pixelShareCurrentView'));
-    
-    let globalImgUrl = "";
-    let globalUser = "";
+        const photoData = JSON.parse(localStorage.getItem('pixelShareCurrentView'));
+        if (!photoData) window.location.href = "index.html";
 
-    if (photoData) {
-        // Prefer the Cloud URL, fallback to local path
-        globalImgUrl = photoData.ImageUrl || `/uploads/${photoData.MediaID}${photoData.FileExtension}`;
-        globalUser = photoData.Photographer || 'anonymous';
+        const imgUrl = photoData.ImageUrl || `/uploads/${photoData.MediaID}${photoData.FileExtension}`;
 
-        // Populate the UI
-        document.getElementById('mainImage').src = globalImgUrl;
-        document.getElementById('avatar').style.backgroundImage = `url('${globalImgUrl}')`;
-        document.getElementById('username').innerText = "@" + globalUser;
-        document.getElementById('likes').innerHTML = `<strong>0</strong> Likes`; // Hardcoded to 0 for now
-        
-        if (photoData.Description) {
-            document.getElementById('description').innerText = photoData.Description;
-        } else {
-            document.getElementById('description').innerText = "No description provided.";
-        }
+        document.getElementById('mainImage').src = imgUrl;
+        document.getElementById('title').innerText = photoData.Title || "Untitled";
+        document.getElementById('location').innerText = photoData.Location || "Unknown";
+        document.getElementById('photographer').innerText = "@" + (photoData.Photographer || "anonymous");
+        document.getElementById('extension').innerText = (photoData.FileExtension || ".jpg").toUpperCase().replace('.', '');
+        document.getElementById('resolution').innerText = photoData.Resolution || "Unknown";
+        document.getElementById('size').innerText = (photoData.FileSize_MB || "0") + "MB";
+        document.getElementById('description').innerText = photoData.Description || "No description provided.";
 
-        // Populate Tags (Using the SQL 'Tags' column)
+        const tagsContainer = document.getElementById('tags');
         if (photoData.Tags) {
-            const tagsArray = photoData.Tags.split(',');
-            const tagsContainer = document.getElementById('tags');
-            tagsContainer.innerHTML = ''; 
-            tagsArray.forEach(tag => {
-                if(tag.trim() === '') return;
+            photoData.Tags.split(',').forEach(tag => {
+                if (!tag.trim()) return;
                 const span = document.createElement('span');
                 span.className = 'tag';
                 span.innerText = '#' + tag.trim();
                 tagsContainer.appendChild(span);
             });
         }
-    } else {
-        document.getElementById('description').innerText = "Error loading image. Please return to the gallery.";
-    }
 
-    // --- DOWNLOAD FUNCTION ---
-    function downloadImage() {
-        if (!globalImgUrl) return;
-        
-        // Triggers the browser to download the file from your local server
-        const a = document.createElement('a');
-        a.href = globalImgUrl;
-        a.download = `PixelShare_${globalUser}_export${photoData.FileExtension}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-</script>
-
+        function downloadImage() {
+            const a = document.createElement('a');
+            a.href = imgUrl;
+            a.download = `PixelShare_${photoData.MediaID}${photoData.FileExtension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
 </body>
 </html>
