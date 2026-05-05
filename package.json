@@ -1,0 +1,8 @@
+{
+  "name": "pixelshare-root",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd BackEnd && npm install && node server.cjs",
+    "install-backend": "cd BackEnd && npm install"
+  }
+}
