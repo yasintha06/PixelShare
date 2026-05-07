@@ -54,6 +54,7 @@ app.use(express.static(path.join(__dirname, '../FrontEnd')));
 
 // CREATE: Upload photo
 app.post('/api/upload', async (req, res) => {
+    console.log("CRUD RESTFUL# CREATE");
     const { 
         title, location, description, tags, photographer, 
         source, copyright, aiGenerated,
@@ -102,6 +103,7 @@ app.post('/api/upload', async (req, res) => {
 
 // READ: Get all photos
 app.get('/api/photos', async (req, res) => {
+    console.log("CRUD RESTFUL# READ");
     try {
         const { resources } = await cosmosContainer.items
             .query("SELECT * FROM c ORDER BY c.UploadDate DESC")
@@ -115,6 +117,7 @@ app.get('/api/photos', async (req, res) => {
 
 // UPDATE: Update photo metadata
 app.put('/api/photos/:id', async (req, res) => {
+    console.log("CRUD RESTFUL# UPDATE");
     try {
         const { id } = req.params;
         const updates = req.body;
@@ -139,6 +142,7 @@ app.put('/api/photos/:id', async (req, res) => {
 
 // DELETE: Remove photo and metadata
 app.delete('/api/photos/:id', async (req, res) => {
+    console.log("CRUD RESTFUL# DELETE");
     try {
         const { id } = req.params;
         
