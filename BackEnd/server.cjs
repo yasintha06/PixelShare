@@ -1,12 +1,22 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
+const appInsights = require('applicationinsights');
 const { CosmosClient } = require("@azure/cosmos");
 const { BlobServiceClient } = require("@azure/storage-blob");
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 8080;
+
+// 1. Azure Application Insights Setup
+if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
+    appInsights.setup(process.env.APPLICATIONINSIGHTS_CONNECTION_STRING)
+        .setAutoDependencyCorrelation(true)
+        .setAutoCollectRequests(true)
+        .setAutoCollectPerformance(true)
+        .setAutoCollectExceptions(true)
+        .start();
+}
 
 // Azure Configurations
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
@@ -38,17 +48,16 @@ async function setupAzure() {
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
-// Serve frontend static files
 app.use(express.static(path.join(__dirname, '../FrontEnd')));
-// Fallback for local uploads (during transition)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
+
+// CREATE: Upload photo
 app.post('/api/upload', async (req, res) => {
     const { 
         title, location, description, tags, photographer, 
-        source, copyright, aiGenerated, img, extension, 
-        resolution, sizeMB 
+        source, copyright, aiGenerated,
+        img, extension, resolution, sizeMB 
     } = req.body;
 
     try {
@@ -59,14 +68,12 @@ app.post('/api/upload', async (req, res) => {
         const buffer = Buffer.from(matches[2], 'base64');
         const blobName = mediaId + extension;
 
-        // 1. Upload to Blob Storage
         const containerClient = blobServiceClient.getContainerClient(storageContainerName);
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
         await blockBlobClient.uploadData(buffer, {
             blobHTTPHeaders: { blobContentType: `image/${extension.replace('.', '')}` }
         });
 
-        // 2. Save Metadata to Cosmos DB
         const metadata = {
             id: mediaId,
             MediaID: mediaId,
@@ -81,7 +88,7 @@ app.post('/api/upload', async (req, res) => {
             FileExtension: extension,
             Resolution: resolution,
             FileSize_MB: sizeMB,
-            ImageUrl: blockBlobClient.url, // Store the public URL
+            ImageUrl: blockBlobClient.url,
             UploadDate: new Date().toISOString()
         };
 
@@ -93,6 +100,7 @@ app.post('/api/upload', async (req, res) => {
     }
 });
 
+// READ: Get all photos
 app.get('/api/photos', async (req, res) => {
     try {
         const { resources } = await cosmosContainer.items
@@ -105,8 +113,51 @@ app.get('/api/photos', async (req, res) => {
     }
 });
 
+// UPDATE: Update photo metadata
+app.put('/api/photos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+
+        const { resource: existingItem } = await cosmosContainer.item(id, id).read();
+        if (!existingItem) return res.status(404).json({ error: "Photo not found" });
+
+        const updatedItem = { ...existingItem, ...updates };
+        await cosmosContainer.item(id, id).replace(updatedItem);
+
+        res.json({ success: true, item: updatedItem });
+    } catch (error) {
+        console.error("Update error:", error);
+        res.status(500).json({ error: "Update failed" });
+    }
+});
+
+// DELETE: Remove photo and metadata
+app.delete('/api/photos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { resource: item } = await cosmosContainer.item(id, id).read();
+        
+        if (!item) return res.status(404).json({ error: "Photo not found" });
+
+        // 1. Delete from Blob Storage
+        const blobName = item.MediaID + item.FileExtension;
+        const containerClient = blobServiceClient.getContainerClient(storageContainerName);
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        await blockBlobClient.deleteIfExists();
+
+        // 2. Delete from Cosmos DB
+        await cosmosContainer.item(id, id).delete();
+
+        res.json({ success: true, message: "Photo deleted from cloud" });
+    } catch (error) {
+        console.error("Delete error:", error);
+        res.status(500).json({ error: "Delete failed" });
+    }
+});
+
 // Start Server
 app.listen(port, async () => {
     console.log(`🚀 Server active on port ${port}`);
     await setupAzure();
-});
+});
