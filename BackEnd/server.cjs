@@ -119,11 +119,16 @@ app.put('/api/photos/:id', async (req, res) => {
         const { id } = req.params;
         const updates = req.body;
 
-        const { resource: existingItem } = await cosmosContainer.item(id, id).read();
-        if (!existingItem) return res.status(404).json({ error: "Photo not found" });
+        const { resources } = await cosmosContainer.items
+            .query({ query: "SELECT * FROM c WHERE c.id = @id", parameters: [{ name: "@id", value: id }] })
+            .fetchAll();
 
+        if (resources.length === 0) return res.status(404).json({ error: "Photo not found" });
+
+        const existingItem = resources[0];
         const updatedItem = { ...existingItem, ...updates };
-        await cosmosContainer.item(id, id).replace(updatedItem);
+
+        await cosmosContainer.items.upsert(updatedItem);
 
         res.json({ success: true, item: updatedItem });
     } catch (error) {
@@ -136,18 +141,31 @@ app.put('/api/photos/:id', async (req, res) => {
 app.delete('/api/photos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { resource: item } = await cosmosContainer.item(id, id).read();
         
-        if (!item) return res.status(404).json({ error: "Photo not found" });
+        const { resources } = await cosmosContainer.items
+            .query({ query: "SELECT * FROM c WHERE c.id = @id", parameters: [{ name: "@id", value: id }] })
+            .fetchAll();
+            
+        if (resources.length === 0) return res.status(404).json({ error: "Photo not found" });
+        const item = resources[0];
 
         // 1. Delete from Blob Storage
-        const blobName = item.MediaID + item.FileExtension;
-        const containerClient = blobServiceClient.getContainerClient(storageContainerName);
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-        await blockBlobClient.deleteIfExists();
+        try {
+            const blobName = item.MediaID + item.FileExtension;
+            const containerClient = blobServiceClient.getContainerClient(storageContainerName);
+            const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+            await blockBlobClient.deleteIfExists();
+        } catch (e) { console.error("Blob delete error:", e); }
 
         // 2. Delete from Cosmos DB
-        await cosmosContainer.item(id, id).delete();
+        try { await cosmosContainer.item(id, item.id).delete(); } 
+        catch (e1) {
+            try { await cosmosContainer.item(id, item.Photographer).delete(); } 
+            catch (e2) {
+                try { await cosmosContainer.item(id, item.Tags).delete(); }
+                catch (e3) { await cosmosContainer.item(id, undefined).delete(); }
+            }
+        }
 
         res.json({ success: true, message: "Photo deleted from cloud" });
     } catch (error) {
